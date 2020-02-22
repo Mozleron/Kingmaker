@@ -15,4 +15,9 @@ public class ToplistEntry : MonoBehaviour
         this.score.text = score.ToString();
         this.rank.text = rank.ToString();
     }
+
+    public void Delete()
+    {
+        DestroyImmediate(this.gameObject);
+    }
 }

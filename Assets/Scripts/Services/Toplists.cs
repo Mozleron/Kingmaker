@@ -73,7 +73,6 @@ namespace Services
          */
         public bool ReportResult(IToplistIdentifier identifier, int score)
         {
-			
             if (entries.Exists(e => e.Username == localUsername))
             {
                 ToplistEntry existingEntry = (ToplistEntry) entries.Find(e => e.Username == localUsername);
@@ -85,6 +84,43 @@ namespace Services
             }
 		    entries.Add(new ToplistEntry(localUsername, score));
             return true;
+        }
+    }
+
+    public class MultiTopList : LocalToplist
+    {
+        private string localUserName{ get; set; }
+        Dictionary<int,LocalToplist> localLists;
+        public MultiTopList(){
+            localLists = new Dictionary<int, LocalToplist>();
+        }
+
+        new public bool ReportResult(IToplistIdentifier identifier, int score)
+        {
+            if(!localLists.ContainsKey(identifier.LevelIndex))
+            {
+                localLists[identifier.LevelIndex] = new LocalToplist();
+            }
+            localLists[identifier.LevelIndex].SetLocalUsername(localUserName);
+            localLists[identifier.LevelIndex].ReportResult(identifier, score);
+            return true;
+        }
+
+        new public bool Get(IToplistIdentifier identifier, Action<IList<IToplistEntry>> callback, int maxEntries = 10)
+        {
+            if(localLists.ContainsKey(identifier.LevelIndex))
+            {
+                localLists[identifier.LevelIndex].Get(identifier, callback, maxEntries);
+            }
+            else
+            { return false; }
+            return true;
+        }
+
+        new public void SetLocalUsername(string username)
+        {
+            localUserName = username;
+
         }
     }
 }

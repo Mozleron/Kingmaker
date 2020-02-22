@@ -8,33 +8,42 @@ public class Toplist : MonoBehaviour {
 
     public GameObject toplistEntryPrefab;
 	private List<ToplistEntry> entryList = new List<ToplistEntry> ();
-
-    public void Display(IToplistProvider provider, IToplistIdentifier identifier)
+    private int lastLevel = 0;
+    public void Display(MultiTopList provider, IToplistIdentifier identifier)
     {
         var transformCache = transform;
-
-        provider.Get(identifier, (entries) => {
-            for (int i = 0; i < entries.Count; i++)
-            {
-                var entry = entries[i];
-				ToplistEntry[] currentList = GetComponents<ToplistEntry>();
+        if (lastLevel != identifier.LevelIndex)
+        {
+            foreach (ToplistEntry item in entryList)
+			{
+                item.Delete();
+            }
+            entryList.Clear();
+        }
+		provider.Get(identifier, (entries) =>
+		{
+			for (int i = 0; i < entries.Count; i++)
+			{
+				var entry = entries[i];
 				bool found = false;
-				foreach(ToplistEntry item in entryList)
+				foreach (ToplistEntry item in entryList)
 				{
-					if(item.username.text == entry.Username)
+					if (item.username.text == entry.Username)
 					{
 						item.score.text = entry.Score.ToString();
-						found=true;
+						found = true;
 						break;
 					}
 				}
-				if(!found)
+				if (!found)
 				{
 					ToplistEntry t = Instantiate(toplistEntryPrefab, transformCache).GetComponent<ToplistEntry>();//.Setup(entry.Username, entry.Score, i + 1);
 					t.Setup(entry.Username, entry.Score, i + 1);
 					entryList.Add(t);
 				}
-            }
-        });
+			}
+		});
+
+        lastLevel = identifier.LevelIndex;
     }
 }

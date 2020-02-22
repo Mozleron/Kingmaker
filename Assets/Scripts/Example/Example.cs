@@ -18,10 +18,10 @@ public class Example : MonoBehaviour {
         }
     }
 
-    Toplist toplist;
+    Toplist uiToplist;
 
     Level current;
-    LocalToplist provider;
+    MultiTopList provider;
 	InputField levelIndex;
 	InputField userName;
 	InputField levelScore;
@@ -30,8 +30,9 @@ public class Example : MonoBehaviour {
 		levelIndex = GameObject.Find ("LevelIndex").GetComponent<InputField> ();
 		levelScore = GameObject.Find("Score").GetComponent<InputField>();
 		userName = GameObject.Find("Username").GetComponent<InputField>();
-        provider = new LocalToplist();
-        toplist = FindObjectOfType<Toplist>();
+        provider = new MultiTopList();
+        uiToplist = FindObjectOfType<Toplist>();
+        current = new Level();
     }
 
     void Start()
@@ -47,8 +48,6 @@ public class Example : MonoBehaviour {
 			SetLevel(iLevel);
     }
 
-	//initially assume just one level
-	//think about expanding to more later
 	public void SetLevel(int level)
 	{
 		current.LevelIndex = level;
@@ -80,6 +79,6 @@ public class Example : MonoBehaviour {
 
     public void ShowToplist()
     {
-        toplist.Display(provider, current);
+        uiToplist.Display(provider, current);
     }
 }
