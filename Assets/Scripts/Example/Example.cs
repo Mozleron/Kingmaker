@@ -2,6 +2,7 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -25,6 +26,10 @@ public class Example : MonoBehaviour {
 	InputField levelIndex;
 	InputField userName;
 	InputField levelScore;
+
+
+    private string dataFile = "data.json";
+    
     void Awake()
 	{
 		levelIndex = GameObject.Find ("LevelIndex").GetComponent<InputField> ();
@@ -37,7 +42,8 @@ public class Example : MonoBehaviour {
 
     void Start()
     {
-		levelIndex.onEndEdit.AddListener (SetLevel);
+        //provider.LoadData();
+        levelIndex.onEndEdit.AddListener (SetLevel);
         SetLevel(1);
     }
 		
@@ -75,10 +81,36 @@ public class Example : MonoBehaviour {
     public void ReportScore(int score)
     {
         provider.ReportResult(current, score);
+        provider.SaveData();
     }
 
     public void ShowToplist()
     {
         uiToplist.Display(provider, current);
+    }
+
+    public void LoadData()
+    {
+        string filePath = Path.Combine(Application.streamingAssetsPath, dataFile);
+        if(File.Exists(filePath))
+        {
+            provider = JsonUtility.FromJson<MultiTopList>(filePath);
+        }
+    }
+
+    public void SaveData()
+    {
+        string filePath = Path.Combine(Application.streamingAssetsPath, dataFile);
+        if(!Directory.Exists(Application.streamingAssetsPath))
+        {
+            Directory.CreateDirectory(Application.streamingAssetsPath);
+        }
+        if(!File.Exists(filePath))
+        {
+            using(StreamWriter sw = File.CreateText(filePath))
+            {
+                sw.Write(JsonUtility.ToJson(provider));
+            }
+        }
     }
 }

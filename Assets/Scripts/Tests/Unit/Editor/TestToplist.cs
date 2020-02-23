@@ -20,11 +20,13 @@ public class TestToplist {
     }
 
     LocalToplist toplist;
+    MultiTopList multiTopList;
 
     [SetUp]
     public void Setup()
     {
         toplist = new LocalToplist();
+        multiTopList = new MultiTopList();
     }
 
     [Test]
@@ -68,21 +70,19 @@ public class TestToplist {
     [Test]
     public void ToplistContainsMaxEntries()
     {
-        const string username = "Foo";
-        toplist.SetLocalUsername(username);
+        const string usernameBase = "Foo";
 
         Level level = new Level { LevelIndex = 1 };
         for (int i = 0; i < 10; ++i)
         {
-            var score = 1000 + i;
+            toplist.SetLocalUsername(usernameBase + i.ToString());
+            var score = 1000;
             toplist.ReportResult(level, score);
         }
 
         const int maxEntries = 3;
         toplist.Get(level, (entries) => {
-            
-            Assert.AreSame(entries.Count, maxEntries);
-
+            Assert.AreEqual(entries.Count, maxEntries);
         }, maxEntries);
     }
 
@@ -95,12 +95,34 @@ public class TestToplist {
     [Test]
     public void ScoreIsUpdated()
     {
-
+        Level level = new Level { LevelIndex = 1 };
+        toplist.SetLocalUsername("foo");
+        var score = 1000;
+        toplist.ReportResult(level, score);
+        toplist.Get(level, (entries) =>
+        {
+            Assert.AreEqual(entries[0].Score, score);
+        });
+        score++;
+        toplist.ReportResult(level, score);
+        toplist.Get(level, (entries) =>
+        {
+            Assert.AreEqual(entries[0].Score, score);
+        });
     }
 
     [Test]
     public void MultipleToplists()
     {
-
+        Level level = new Level { LevelIndex = 1 };
+        int maxLists = 10;
+        var score = 1000;
+        multiTopList.SetLocalUsername("foo");
+        for (int i = 0; i < maxLists; ++i)
+        {
+            multiTopList.ReportResult(level, score);
+            level.LevelIndex++;
+        }
+        Assert.AreEqual(multiTopList.localLists.Count, maxLists);
     }
 }

@@ -9,7 +9,7 @@ public class Toplist : MonoBehaviour {
     public GameObject toplistEntryPrefab;
 	private List<ToplistEntry> entryList = new List<ToplistEntry> ();
     private int lastLevel = 0;
-    public void Display(MultiTopList provider, IToplistIdentifier identifier)
+    public void Display(IToplistProvider provider, IToplistIdentifier identifier)
     {
         var transformCache = transform;
         if (lastLevel != identifier.LevelIndex)
@@ -20,7 +20,9 @@ public class Toplist : MonoBehaviour {
             }
             entryList.Clear();
         }
-		provider.Get(identifier, (entries) =>
+        string inType = provider.GetType().ToString();
+        Debug.Log(inType);
+        provider.Get(identifier, (entries) =>
 		{
 			for (int i = 0; i < entries.Count; i++)
 			{
