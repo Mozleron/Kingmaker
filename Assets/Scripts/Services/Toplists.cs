@@ -2,11 +2,10 @@
 
 using System;
 using System.Collections;
-using System.Linq;
-using System.Runtime.Serialization;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Bson;
 using UnityEngine;
 
 namespace Services
@@ -208,13 +207,7 @@ namespace Services
 
             using (StreamWriter sw = File.CreateText(filePath))
             {
-                foreach (LocalToplist top in localLists.Values)
-                {
-                    foreach (ToplistEntry ent in top)
-                    {
-                        sw.Write(JsonUtility.ToJson(ent));
-                    }
-                }
+                sw.Write(JsonConvert.SerializeObject(localLists)); 
             }
         }
 
@@ -223,7 +216,11 @@ namespace Services
             string filePath = Path.Combine(Application.streamingAssetsPath, dataFile);
             if (File.Exists(filePath))
             {
-                localLists = JsonUtility.FromJson<Dictionary<int, LocalToplist>>(filePath);
+                using(StreamReader sr = new StreamReader(filePath))
+                {
+                    string jsonString = sr.ReadToEnd();
+                    localLists = JsonConvert.DeserializeObject<Dictionary<int, LocalToplist>>(jsonString);
+                }
             }
         }
     }
