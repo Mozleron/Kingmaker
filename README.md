@@ -14,3 +14,9 @@ You have been tasked with improving the Toplist micro-service. Add missing featu
 * **Finally** Explain shortly how you would distribute the toplist service to multiple external game teams. Focus on a stable and easily integrated delivery.
 * **Note:** Only interfaces and features need to be the same, feel free to modify the implementation.
 * **Extra credits:** Support toplists hosted on a remote server.
+
+
+Delivery method:
+I would compile this project as an Asset Bundle and then store it in some sort of asset store such as Artifactory or Nuget, or very worst case, 
+a versioned directory on a network file share.  That way, developers can refer to the store for the version they want and can include it in
+their projects as they desire.

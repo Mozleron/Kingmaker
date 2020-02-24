@@ -32,7 +32,19 @@ public class TestToplist {
     [Test]
     public void SetUsername()
     {
-        toplist.SetLocalUsername("Foo");
+        Level level = new Level { LevelIndex = 1 };
+        string username = "Foo";
+        toplist.SetLocalUsername(username);
+        toplist.Get(level, (entries) =>
+        {
+            bool found = false;
+            foreach (var entry in entries)
+            {
+                found |= entry.Username == username;
+            }
+
+            Assert.AreEqual(found, true);
+        });
     }
 
     [Test]
@@ -89,7 +101,12 @@ public class TestToplist {
     [Test]
     public void ToplistPersistance()
     {
-        
+        //Once I can get the read from JSON into a class working, here's how i'd approach this test:
+        //Creat a new Multitoplist. 
+        //Add values to it.
+        //Destroy that list.
+        //Create a new list.
+        //As soon as the new list exists, check it for the values that were added above.
     }
 
     [Test]

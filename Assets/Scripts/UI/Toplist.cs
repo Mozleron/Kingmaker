@@ -14,6 +14,8 @@ public class Toplist : MonoBehaviour {
         var transformCache = transform;
         if (lastLevel != identifier.LevelIndex)
         {
+			//A more efficient approach is probably to make a pool of ToplistEntry object and enable or disable them as needed.
+			//But, for quick and dirty, just deleting and recreating them also works.
             foreach (ToplistEntry item in entryList)
 			{
                 item.Delete();
@@ -39,7 +41,7 @@ public class Toplist : MonoBehaviour {
 				}
 				if (!found)
 				{
-					ToplistEntry t = Instantiate(toplistEntryPrefab, transformCache).GetComponent<ToplistEntry>();//.Setup(entry.Username, entry.Score, i + 1);
+					ToplistEntry t = Instantiate(toplistEntryPrefab, transformCache).GetComponent<ToplistEntry>();
 					t.Setup(entry.Username, entry.Score, i + 1);
 					entryList.Add(t);
 				}

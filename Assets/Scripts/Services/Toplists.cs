@@ -1,11 +1,13 @@
 ﻿// (C) king.com Ltd 2018
-
+/**
+This file is probably a mess for a seasoned Unity dev, but for what it is, it works.
+*/
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+//Brought in the Newtonsoft Json implementation because the Unity version is limited for what I was trying to do.
 using Newtonsoft.Json;
-using Newtonsoft.Json.Bson;
 using UnityEngine;
 
 namespace Services
@@ -50,6 +52,7 @@ namespace Services
         }
     }
 
+//I made this class so the TopList can be iterated through.
     public class ToplistEnum : IEnumerator
     {
         public List<IToplistEntry> _entries;
@@ -92,6 +95,8 @@ namespace Services
         }
     }
 
+//I made this implement IEnumerable so multiples of it could be used in the MultiTopList class.
+//This was the core of my approach for handling high scores across multiple levels.
     public class LocalToplist : IToplistProvider, IEnumerable
     {
         List<IToplistEntry> entries;
@@ -118,6 +123,7 @@ namespace Services
 
         virtual public bool Get(IToplistIdentifier identifier, Action<IList<IToplistEntry>> callback, int maxEntries = 10)
         {
+            //Here is where maxEntries does its magic.
             callback(entries.GetRange(0,(entries.Count >= maxEntries ?maxEntries:entries.Count )));
             return true;
         }
@@ -197,6 +203,7 @@ namespace Services
             localUserName = username;
         }
 
+//This method writes out a very nice JSON representation of all the data entered in via the UI.
         public void SaveData()
         {
             string filePath = Path.Combine(Application.streamingAssetsPath, dataFile);
@@ -211,6 +218,9 @@ namespace Services
             }
         }
 
+//Unfortunately, it does not come back in as neatly as I had hoped.
+//I think the next step to make this approach work is a custom deserializer.
+//This may highlight a design flaw of this approach, but that's where collaboration is so valuable.
         public void LoadData()
         {
             string filePath = Path.Combine(Application.streamingAssetsPath, dataFile);
